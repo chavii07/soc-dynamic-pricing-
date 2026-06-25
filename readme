@@ -1,0 +1,168 @@
+# Competitive Dynamic Pricing with Multi-Agent Reinforcement Learning
+
+**Algorithmic pricing, Nash equilibria, and the emergence of tacit collusion in a Bertrand duopoly.**
+
+This repository contains my work for an 8-week project replicating and extending
+the core mechanism of Calvano, Calzolari, Denicolò & Pastorello,
+*"Artificial Intelligence, Algorithmic Pricing, and Collusion"* (QJE 2020).
+It covers **Weeks 1–4 (Phases 1–2 and the Phase-3 transition)**: game-theoretic
+foundations, a custom market environment, rule-based baseline agents, and a
+tabular Q-learning agent built from scratch.
+
+The driving question: *when self-interested pricing algorithms repeatedly
+interact in a market, do they learn to compete (price at Nash) or to
+tacitly collude (price toward monopoly) — and can we measure where on that
+spectrum they land?*
+
+---
+
+## What's here (Weeks 1–4)
+
+| Phase | Week | Deliverable | Location |
+|-------|------|-------------|----------|
+| 1 — Foundations | 1 | Analytical Bertrand-Nash + monopoly benchmarks, derived on paper and machine-verified | `src/environment/economics.py` |
+| 1 — Foundations | 2 | Custom Gymnasium pricing environment, unit-tested before any agent | `src/environment/pricing_env.py` |
+| 2 — Rule-based | 3 | Four baseline agents + round-robin tournament | `src/agents/rule_based.py`, `src/utils/tournament.py` |
+| 2→3 transition | 4 | Tabular Q-learning from scratch + mid-project gate | `src/agents/q_learning.py`, `experiments/train_q_learning.py` |
+
+Weeks 5–8 (DQN/PPO self-play, the full oligopoly simulation, collusion
+detection, and the write-up) build directly on these components.
+
+---
+
+## The model
+
+A symmetric **differentiated Bertrand duopoly** with logit demand (Calvano et al.):
+
+- Each firm *i* sets a price *pᵢ* from a discrete grid (25 levels by default).
+- Demand follows the logit share `qᵢ = exp((a − pᵢ)/μ) / (exp(a₀/μ) + Σⱼ exp((a − pⱼ)/μ))`.
+- Per-firm profit is `πᵢ = (pᵢ − c)·qᵢ`.
+- Firms interact repeatedly; the state is the previous period's joint price (memory-1).
+
+Two analytical reference points anchor everything:
+
+| Benchmark | Price | Per-firm profit | Meaning |
+|-----------|------:|----------------:|---------|
+| **Bertrand-Nash** | 1.473 | 0.223 | competitive outcome (Δ = 0) |
+| **Monopoly / collusive** | 1.925 | 0.337 | joint-profit-max outcome (Δ = 1) |
+
+The **collusion index** `Δ = (π − π_Nash) / (π_monopoly − π_Nash)` rescales any
+realised profit onto a 0-to-1 scale between these two poles.
+
+---
+
+## Headline results
+
+### Baseline tournament (Week 3)
+
+Round-robin, 2,000 rounds per match, all seeds logged. Collusion index Δ per agent:
+
+| Matchup | Δ (row) | Δ (col) | Reading |
+|---------|--------:|--------:|---------|
+| Always-Collude vs Always-Collude | 1.00 | 1.00 | full collusion sustained when both cooperate |
+| Tit-for-Tat vs Tit-for-Tat | 1.00 | 1.00 | TFT cooperates with itself |
+| Tit-for-Tat vs Always-Collude | 1.00 | 1.00 | TFT rewards a cooperator |
+| Always-Nash vs Always-Collude | 1.19 | −0.95 | the Nash firm **exploits** the colluder by undercutting |
+| Always-Nash vs Always-Nash | −0.06 | −0.06 | mutual competition, Δ ≈ 0 |
+
+This reproduces the central tension: collusion is jointly profitable but
+individually exploitable. (Figure: `figures/tournament_heatmap.png`.)
+
+### Q-learning (Week 4)
+
+Tabular Q-learner trained 200k steps, ε decayed 1.0 → 0.05, reward-normalised:
+
+| Opponent | Learner Δ | Interpretation |
+|----------|----------:|----------------|
+| Random | 0.58 | beats noise, drifts above Nash |
+| Always-Nash | −0.06 | forced down to the competitive best response |
+| Tit-for-Tat | 0.42 | **learns partial tacit collusion** via reward/punishment |
+
+**Mid-project gate: PASS** — the learner's greedy profit (0.290) beats the
+Random control (0.265). (Figure: `figures/q_learning_curve.png`.)
+
+The Always-Nash and Tit-for-Tat contrast is the key economic finding: an
+RL agent prices competitively against an uncooperative rival but learns to
+raise prices when its rival is capable of rewarding cooperation — tacit
+collusion without any communication.
+
+---
+
+## Repository layout
+
+```
+competitive-pricing-rl/
+├── src/
+│   ├── environment/
+│   │   ├── economics.py        # logit demand, Nash + monopoly benchmarks (W1)
+│   │   └── pricing_env.py       # custom Gymnasium environment (W2)
+│   ├── agents/
+│   │   ├── rule_based.py        # Nash / Collude / TFT / Random baselines (W3)
+│   │   └── q_learning.py        # tabular Q-learning from scratch (W4)
+│   └── utils/
+│       ├── metrics.py           # collusion index Δ, smoothing
+│       └── tournament.py        # round-robin harness (W3)
+├── experiments/
+│   ├── train_q_learning.py      # training + mid-project gate (W4)
+│   ├── plotting.py              # figure generation
+│   └── results/                 # CSV outputs + summary
+├── tests/                       # 19 unit tests (env + economics + agents)
+├── figures/                     # generated PNGs
+├── docs/                        # weekly progress log + project report
+├── notebooks/                   # exploratory Nash-derivation notebook
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Quick start
+
+```bash
+git clone <your-repo-url>
+cd competitive-pricing-rl
+pip install -r requirements.txt
+
+# 1. Verify the analytical benchmarks
+python src/environment/economics.py
+
+# 2. Run the test suite (environment must be correct before agents)
+pytest -q
+
+# 3. Run the Week 3 baseline tournament
+python -m src.utils.tournament
+
+# 4. Train the Week 4 Q-learning agent and check the mid-project gate
+python -m experiments.train_q_learning --opponent tit_for_tat --steps 200000
+
+# 5. Regenerate figures
+python -m experiments.plotting
+```
+
+---
+
+## Design principles (from the weekly guidance)
+
+- **Analytical truth first.** The Nash/monopoly benchmarks are derived by hand
+  (Week 1) and machine-verified (`test_economics.py`) *before* any agent exists,
+  so every learning result is measured against a correct ruler.
+- **Test the environment before trusting results.** A buggy environment silently
+  corrupts everything downstream, so `pricing_env.py` ships with seven unit tests.
+- **Baselines before learning.** The four rule-based agents both validate the
+  environment and give the RL agent something meaningful to beat.
+- **Hand-code the Bellman update.** The Q-learner is written from scratch — no
+  Stable-Baselines3 — so DQN/PPO in Week 5 aren't black boxes.
+- **Configurable, not hard-coded.** Demand parameters `a, μ, c` and the price
+  grid are all parameters; nothing is baked in.
+- **Reproducible.** Every stochastic component takes and logs a seed.
+
+---
+
+## References
+
+- Calvano, Calzolari, Denicolò & Pastorello (2020). *Artificial Intelligence,
+  Algorithmic Pricing, and Collusion.* American Economic Review / QJE.
+- Sutton & Barto (2020). *Reinforcement Learning: An Introduction*, 2nd ed.
+- Watkins & Dayan (1992). *Q-learning.* Machine Learning 8.
+- Axelrod (1984). *The Evolution of Cooperation.*
+- Osborne & Rubinstein (1994). *A Course in Game Theory.*

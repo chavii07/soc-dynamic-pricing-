@@ -1,0 +1,62 @@
+{
+  "Random vs Random": {
+    "mean_profit_a": 993.1200000000001,
+    "mean_profit_b": 986.7322222222223,
+    "mean_price_a": 30.13,
+    "mean_price_b": 29.885
+  },
+  "Random vs AlwaysNash": {
+    "mean_profit_a": 1102.688888888889,
+    "mean_profit_b": 1354.6666666666667,
+    "mean_price_a": 30.166666666666668,
+    "mean_price_b": 36.66666666666667
+  },
+  "Random vs AlwaysCollude": {
+    "mean_profit_a": 1265.1066666666668,
+    "mean_profit_b": 1126.2044444444443,
+    "mean_price_a": 30.06,
+    "mean_price_b": 46.666666666666664
+  },
+  "Random vs TitForTat": {
+    "mean_profit_a": 968.0422222222222,
+    "mean_profit_b": 967.62,
+    "mean_price_a": 29.54,
+    "mean_price_b": 29.556666666666672
+  },
+  "AlwaysNash vs AlwaysNash": {
+    "mean_profit_a": 1493.3333333333333,
+    "mean_profit_b": 1493.3333333333333,
+    "mean_price_a": 36.66666666666667,
+    "mean_price_b": 36.66666666666667
+  },
+  "AlwaysNash vs AlwaysCollude": {
+    "mean_profit_a": 1706.666666666667,
+    "mean_profit_b": 1320.0000000000002,
+    "mean_price_a": 36.66666666666667,
+    "mean_price_b": 46.666666666666664
+  },
+  "AlwaysNash vs TitForTat": {
+    "mean_profit_a": 1493.5466666666666,
+    "mean_profit_b": 1493.16,
+    "mean_price_a": 36.66666666666667,
+    "mean_price_b": 36.67666666666667
+  },
+  "AlwaysCollude vs AlwaysCollude": {
+    "mean_profit_a": 1613.333333333333,
+    "mean_profit_b": 1613.333333333333,
+    "mean_price_a": 46.666666666666664,
+    "mean_price_b": 46.666666666666664
+  },
+  "AlwaysCollude vs TitForTat": {
+    "mean_profit_a": 1613.333333333333,
+    "mean_profit_b": 1613.333333333333,
+    "mean_price_a": 46.666666666666664,
+    "mean_price_b": 46.666666666666664
+  },
+  "TitForTat vs TitForTat": {
+    "mean_profit_a": 1335.5555555555559,
+    "mean_profit_b": 1335.5555555555559,
+    "mean_price_a": 38.33333333333333,
+    "mean_price_b": 38.33333333333333
+  }
+}

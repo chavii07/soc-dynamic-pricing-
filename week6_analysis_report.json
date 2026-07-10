@@ -1,0 +1,43 @@
+{
+  "nash_price": 37.49999999909888,
+  "monopoly_price": 46.66666666666664,
+  "theoretical_price_of_anarchy": 0.8533333333296049,
+  "per_algorithm": {
+    "dqn": {
+      "nash_price": 37.49999999909888,
+      "monopoly_price": 46.66666666666664,
+      "mean_price_across_seeds": 48.33333333333334,
+      "ci95_low": 48.33333333333334,
+      "ci95_high": 48.33333333333334,
+      "mean_supra_nash_fraction": 1.0,
+      "fraction_seeds_colluding": 1.0,
+      "per_seed_mean_price": [
+        48.33333333333334,
+        48.33333333333334,
+        48.33333333333334,
+        48.33333333333334,
+        48.33333333333334
+      ]
+    },
+    "ppo": {
+      "nash_price": 37.49999999909888,
+      "monopoly_price": 46.66666666666664,
+      "mean_price_across_seeds": 38.333333333333336,
+      "ci95_low": 38.333333333333336,
+      "ci95_high": 38.333333333333336,
+      "mean_supra_nash_fraction": 0.0,
+      "fraction_seeds_colluding": 0.0,
+      "per_seed_mean_price": [
+        38.333333333333336,
+        38.333333333333336,
+        38.333333333333336,
+        38.333333333333336,
+        38.333333333333336
+      ]
+    }
+  },
+  "dqn_vs_ppo_ttest": {
+    "t_stat": Infinity,
+    "p_value": 0.0
+  }
+}

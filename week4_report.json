@@ -1,0 +1,9 @@
+{
+  "mean_profit_vs_random": 61334.56111111111,
+  "std_profit_vs_random": 2127.0226725053617,
+  "random_baseline_vs_random": 49353.10555555556,
+  "mean_profit_vs_always_nash": 71517.4888888889,
+  "gate_passed": true,
+  "nash_price": 37.49999999909888,
+  "monopoly_price": 46.66666666666664
+}
